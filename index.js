@@ -222,53 +222,31 @@ app.post('/getMember', async (req, res) => {
     if(row.data().OwnerID === owner_id){
       newArray.push(row.data())
     }
-
   })
-  
-  // newArray.forEach( async (row) =>{
-  //   var memRef = await db.collection("user").doc(row.MemberID).get();
 
-  //   if(memRef){
-  //     memList.push(memRef.data())
-  //   }
-  //   //console.log(memRef.data())
-    
+  var memRef = await db.collection("user")
+  var memList = []
 
-  // })
+  for(const row of newArray){
+    const contents = await memRef.doc(row.MemberID).get()
+    memList.push(contents.data())
+  }
 
-
-  res.send(newArray)
+  res.send(memList)
 })
 
-app.post('/getMemberInfo', async (req, res) => {
-  // var memberKeyList = req.body.member
-  // var memRef = await db.collection("user")
-  // let newArray = []
-  // memberKeyList.forEach((row) => {
-  //   memRef.doc(row.MemberID).get().then((doc)=>{
+app.post('/getStores', async (req, res) => {
+  var owner_id = req.body.owner_id
+  var docRef = await db.collection("shop").get()
+  var newArray = []
 
-  //       newArray.push(doc.data())
-  //       console.log(doc.data())
-
-      
-
-  //   })
-    
-  // })
-  // res.send(newArray)
-
-  var memberKeyList = req.body.member
-  var memRef = await db.collection("user")
-  //let newArray = []
-  const docs = Promise.all(
-    memberKeyList.map(function(row){
-    return Promise.all(memRef.doc(row.MemberID).get())
+  docRef.forEach((row) => {
+    if(row.data().OwnerID === owner_id){
+      newArray.push(row.data())
+    }
   })
-  );
 
-  console.log(docs)
-  //var newArray = docs.map((doc)=> doc.data());
-  res.send(docs)
+  res.send(newArray)
 })
 
 app.post('/getUserInfo', async (req, res) => {
@@ -294,11 +272,15 @@ app.get('/checkin/:shopOwnerID/:shopname/:userPhone', async (req, res) => {
   //const userPhone = req.params.userPhone
 
   var docRef = await db.collection("Time")
+  var timestamp = new Date()
+
+  //console.log(timestamp.toString())
 
   var docData = {
     shopOwnerID: req.params.shopOwnerID,
     shopname: req.params.shopname,
     userPhone: req.params.userPhone,
+    timestamp: timestamp
     
 
   }

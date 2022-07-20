@@ -49,9 +49,9 @@ app.post('/register', async (req, res) => {
     DoB: req.body.DoB,
     Address: req.body.Address,
     Password: req.body.Password,
-    ConPassword: req.body.ConPassword, //owner status
+    ConPassword: req.body.ConPassword,
+    Imgurl: req.body.Imgurl,
   }
-
  user.doc(req.body.Phone).set(docData).then(() => {
     console.log("success")
   })
@@ -70,10 +70,68 @@ app.post('/register', async (req, res) => {
   //   ConPassword: req.body.ConPassword,
   //   // Img: req.body.Img,
   // })
+  res.send(req.body.Phone)
+
+})
+
+
+app.post('/registerstore', async (req, res) => {
+ 
+  const user = db.collection("shop")
+  var docData = {
+    Name: req.body.Name,
+    TimeOpen: req.body.TimeOpen,
+    OpenDay: req.body.OpenDay,
+    Address: req.body.Address,
+    Contact: req.body.Contact,
+    Imgurl: req.body.Imgurl,
+    OwnerID: req.body.OwnerID
+    
+
+  }
+  user.doc().set(docData).then(() => {
+    console.log("success")
+  })
+  
+  // res.send(req.data)
+  res.send("done")
+
+})
+
+
+app.post('/registerUser', async (req, res) => {
+  const user = db.collection("user")
+  var docData = {
+    Fname: req.body.Fname,
+    Lname: req.body.Lname,
+    Gender: req.body.Gender,
+    DoB: req.body.DoB,
+    Address: req.body.Address,
+    Password: req.body.Password,
+    ConPassword: req.body.ConPassword,
+    Imgurl: req.body.Imgurl,
+    
+
+  }
+ user.doc(req.body.Phone).set(docData).then(() => {
+
+    console.log("success")
+  })
+
+  const member = db.collection("member")
+  var docmem ={
+    MemberID: req.body.Phone,
+    OwnerID: req.body.OwnerID
+  }
+  member.doc().set(docmem).then(() => {
+
+    console.log("success")
+  })
 
   res.send(req.body.Phone)
 
 })
+
 
 // app.get('/listMember', async (req, res) => {
  
@@ -155,6 +213,64 @@ app.get('/data', async (req, res) => {
   // console.log(docRef)
 })
 
+app.post('/getMember', async (req, res) => {
+  var docRef = await db.collection("member").get();
+  var newArray = []
+  var owner_id = req.body.userPhone
+
+  docRef.forEach((row) => {
+    if(row.data().OwnerID === owner_id){
+      newArray.push(row.data())
+    }
+
+  })
+  
+  // newArray.forEach( async (row) =>{
+  //   var memRef = await db.collection("user").doc(row.MemberID).get();
+
+  //   if(memRef){
+  //     memList.push(memRef.data())
+  //   }
+  //   //console.log(memRef.data())
+    
+
+  // })
+
+
+  res.send(newArray)
+})
+
+app.post('/getMemberInfo', async (req, res) => {
+  // var memberKeyList = req.body.member
+  // var memRef = await db.collection("user")
+  // let newArray = []
+  // memberKeyList.forEach((row) => {
+  //   memRef.doc(row.MemberID).get().then((doc)=>{
+
+  //       newArray.push(doc.data())
+  //       console.log(doc.data())
+
+      
+
+  //   })
+    
+  // })
+  // res.send(newArray)
+
+  var memberKeyList = req.body.member
+  var memRef = await db.collection("user")
+  //let newArray = []
+  const docs = Promise.all(
+    memberKeyList.map(function(row){
+    return Promise.all(memRef.doc(row.MemberID).get())
+  })
+  );
+
+  console.log(docs)
+  //var newArray = docs.map((doc)=> doc.data());
+  res.send(docs)
+})
+
 app.post('/getUserInfo', async (req, res) => {
     const userPhone = req.body.userPhone
 
@@ -169,6 +285,27 @@ app.post('/getUserInfo', async (req, res) => {
     }).catch((error) => {
         console.log("Error getting document:", error);
     });
+
+})
+
+
+
+app.get('/checkin/:shopID/:shopname/::userPhone', async (req, res) => {
+  //const userPhone = req.params.userPhone
+
+  var docRef = await db.collection("Time")
+
+  var docData = {
+    shopID: req.params.userPhone,
+    shopname: req.params.shopname,
+    userPhone: req.params.userPhone,
+    
+
+  }
+  docRef.doc().set(docData).then(() => {
+
+    console.log("success")
+  })
 
 })
 
@@ -227,6 +364,15 @@ app.post('/checkuser', async (req, res) => {
       console.log("Error getting document:", error);
   });
 })
+
+app.post('/addmember', (req, res) => {
+    var docRef = db.collection("user").doc(req.body.Phone);
+    
+
+})
+
+
+
 
 
 app.use(function (req, res, next) {

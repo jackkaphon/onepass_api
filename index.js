@@ -290,13 +290,13 @@ app.post('/getUserInfo', async (req, res) => {
 
 
 
-app.get('/checkin/:shopID/:shopname/::userPhone', async (req, res) => {
+app.get('/checkin/:shopOwnerID/:shopname/:userPhone', async (req, res) => {
   //const userPhone = req.params.userPhone
 
   var docRef = await db.collection("Time")
 
   var docData = {
-    shopID: req.params.userPhone,
+    shopOwnerID: req.params.shopOwnerID,
     shopname: req.params.shopname,
     userPhone: req.params.userPhone,
     
@@ -304,8 +304,10 @@ app.get('/checkin/:shopID/:shopname/::userPhone', async (req, res) => {
   }
   docRef.doc().set(docData).then(() => {
 
+
     console.log("success")
   })
+  res.send('your in')
 
 })
 

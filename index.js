@@ -249,6 +249,16 @@ app.post('/getStores', async (req, res) => {
   res.send(newArray)
 })
 
+app.get('/getAllStores', async (req, res) => {
+  var docRef = await db.collection("shop").get()
+  var newArray = []
+
+  docRef.forEach((row) => {
+      newArray.push(row.data())
+  })
+  res.send(newArray)
+})
+
 app.post('/getUserInfo', async (req, res) => {
     const userPhone = req.body.userPhone
 
@@ -264,6 +274,22 @@ app.post('/getUserInfo', async (req, res) => {
         console.log("Error getting document:", error);
     });
 
+})
+
+app.post('/getUserTimeLine', async (req, res) => {
+  var userPhone = req.body.userPhone
+  var docRef = await db.collection("Time").get()
+  var newArray = []
+
+  docRef.forEach((row) => {
+    if(row.data().userPhone === userPhone){
+      newArray.push(row.data())
+      //console.log(row.data().timestamp.toString())
+    }
+      
+  })
+
+  res.send(newArray)
 })
 
 

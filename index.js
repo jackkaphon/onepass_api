@@ -282,13 +282,11 @@ app.post('/getUserTimeLine', async (req, res) => {
   var newArray = []
 
   docRef.forEach((row) => {
-    if(row.data().userPhone === userPhone){
+    if(row.data().userPhone = userPhone){
       newArray.push(row.data())
-      //console.log(row.data().timestamp.toString())
     }
       
   })
-
   res.send(newArray)
 })
 
